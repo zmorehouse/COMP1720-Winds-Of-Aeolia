@@ -36,16 +36,12 @@ artist-statement-wordcount:
     - echo "Word Count:"
     - var="$(cat artist-statement.md | wc -w)"
     - > 
-      if (( $var > 100)); then
-        exit 0 ;
-      else
+      if (( $var < 100)); then
         echo "Your artist statement should be more than 100 words!";
         exit 1;
       fi
     - >
       if (( $var > 250)); then
-        exit 0 ;
-      else
         echo "Your artist statement should only be 200 words!";
         exit 1;
       fi
@@ -59,7 +55,7 @@ thumbnail:
   script:
     - python /validate.py exists thumbnail.png
 
-# check that you've filled out your statement of originality
+# check that you've filled out your references file
 references:
   stage: test
   allow_failure: true
@@ -80,8 +76,6 @@ deploy:
   script:
     - mkdir -p $DEST_DIR
     # copy assets folder, and all top-level .html and .js files
-    - cp -r assets *.html *.js $DEST_DIR
-    - if [ -e thumbnail.png ]; then cp thumbnail.png $DEST_DIR; fi
+    - cp -r * $DEST_DIR
     - echo "your sketch should be visible shortly (on campus only) at the test URL"
     - echo $COMP1720_TEST_URL
-
