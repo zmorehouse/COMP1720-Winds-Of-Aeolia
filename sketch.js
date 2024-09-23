@@ -1,97 +1,121 @@
-let waveLines = [];
-let numLines = 10;
-let maxOffset = 100;
-let colors;
-let oscillators = [];
-let soundFreq = [220, 246, 261, 293, 329, 349, 392]; 
-let waveSpeed = 0.5;
-let thickness = 15; 
-let clicked = false; 
+let strings = [];
+let windSpeed;
+let soundFile, fft;
+let windDirection = 0.2; 
+let smoothBlowIntensity = 1; 
+let particles = []; 
+
+function preload() {
+  soundFile = loadSound('windaudio.mp3'); 
+}
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
-  noFill();
-  
-  colors = [
-    color(190, 220, 180, 100), //  green
-    color(230, 220, 200, 100), //  white
-    color(140, 110, 90, 100)   //  brown
-  ];
-  
-  for (let i = 0; i < numLines; i++) {
-    waveLines.push(new WaveLine(i * (height / numLines)));
+  createCanvas(windowWidth, windowHeight); 
+  fft = new p5.FFT(0.9, 16); 
+  fft.setInput(soundFile);
+  soundFile.loop(); 
+
+  for (let i = 0; i < 10; i++) {
+    let x = map(i, 0, 9, width / 4, (3 * width) / 4);
+    let baseRandomness = random(0.8, 1.2); 
+    strings.push(new HarpString(x, -height / 2, height * 1.5, i * 0.1, baseRandomness)); 
   }
-  
-  for (let i = 0; i < soundFreq.length; i++) {
-    let osc = new p5.Oscillator('sine');
-    osc.freq(soundFreq[i]);
-    osc.amp(0);
-    osc.start();
-    oscillators.push(osc);
+
+  for (let i = 0; i < 50; i++) {
+    particles.push(new Particle(random(width), random(height)));
   }
+
+  frameRate(30); 
 }
 
 function draw() {
-  background(255, 100); 
-  for (let line of waveLines) {
-    line.update();
-    line.display();
+  background(10, 10, 30); 
+
+  if (keyIsDown(LEFT_ARROW)) {
+    windDirection -= 0.05; 
+  } 
+  if (keyIsDown(RIGHT_ARROW)) {
+    windDirection += 0.05; 
   }
-  
-  if (!clicked) {
-    for (let osc of oscillators) {
-      osc.amp(0, 0.5); 
-    }
+
+  windDirection = constrain(windDirection, -2, 2);
+
+  let spectrum = fft.analyze();
+  let energy = fft.getEnergy("bass", "treble");
+  let blowIntensity = map(energy, 0, 255, 5, 100); 
+
+  smoothBlowIntensity = lerp(smoothBlowIntensity, blowIntensity, 0.1); 
+
+  for (let particle of particles) {
+    particle.update(windDirection, smoothBlowIntensity);
+    particle.display();
+  }
+
+  for (let string of strings) {
+    string.update(smoothBlowIntensity, windDirection); 
+    string.display();
   }
 }
 
-function mousePressed() {
-  clicked = true;
-  for (let osc of oscillators) {
-    osc.amp(0.1, 0.1); 
-  }
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight); 
 }
 
-function mouseReleased() {
-  clicked = false;
-}
-
-class WaveLine {
-  constructor(y) {
-    this.y = y; 
-    this.xOffset = 0;
-    this.baseY = y; 
+class Particle {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.size = random(2, 5);
+    this.speed = random(0.5, 2);
+    this.alpha = random(100, 200);
   }
 
-  update() {
-    this.xOffset += waveSpeed;
+  update(windDirection, blowIntensity) {
+    this.x += windDirection * this.speed;
+    this.y += sin(frameCount * 0.01) * this.speed * blowIntensity * 0.01; 
+
+    if (this.x > width) this.x = 0;
+    if (this.x < 0) this.x = width;
+    if (this.y > height) this.y = 0;
+    if (this.y < 0) this.y = height;
   }
 
   display() {
-    strokeWeight(thickness);
-    let col = colors[int(random(colors.length))];
-    stroke(col);
+    noStroke();
+    fill(255, this.alpha);
+    ellipse(this.x, this.y, this.size);
+  }
+}
 
-    beginShape();
-    for (let x = 0; x < width; x += 10) {
-      let y = this.baseY + sin((x + this.xOffset) * 0.02) * 50;
+class HarpString {
+  constructor(x, y1, y2, offset, baseRandomness) {
+    this.x = x;
+    this.y1 = y1;
+    this.y2 = y2;
+    this.offset = offset;
+    this.baseRandomness = baseRandomness; 
+  }
 
-      if (clicked) {
-        let d = dist(x, y, mouseX, mouseY);
-        
-        if (d < maxOffset) {
-          let angle = atan2(y - mouseY, x - mouseX); 
-          
-          if (y < mouseY) {
-            y -= (maxOffset - d) * 0.5 * sin(angle); 
-          } else {
-            y += (maxOffset - d) * 0.5 * sin(angle); 
-          }
-        }
+  update(blowIntensity, windDirection) {
+    let timeVaryingRandomness = this.baseRandomness + (noise(this.offset + frameCount * 0.01) - 0.5) * 0.1;
+    this.blowFactor = blowIntensity * timeVaryingRandomness * windDirection; 
+  }
+
+  display() {
+    for (let j = -3; j <= 3; j++) {
+      let alpha = map(abs(j), 0, 3, 200, 50); 
+      let weight = map(abs(j), 0, 3, 8, 3); 
+      stroke(255, 255, 255, alpha);
+      strokeWeight(weight);
+
+      noFill();
+      beginShape();
+      for (let i = 0; i <= 1; i += 0.01) {
+        let x = this.x + this.blowFactor * sin(PI * i) + j; 
+        let y = lerp(this.y1, this.y2, i);
+        vertex(x, y);
       }
-
-      vertex(x, y); 
+      endShape();
     }
-    endShape();
   }
 }
