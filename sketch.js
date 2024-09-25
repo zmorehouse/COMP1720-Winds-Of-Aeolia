@@ -1,11 +1,14 @@
 let strings = [];
 let windSpeed;
 let soundFile, fft;
-let windDirection = 0.2;
+let windDirection = 0;
+let targetWindDirection = 0.2;
 let smoothBlowIntensity = 1;
 let particles = [];
 let ripples = [];
 let osc;
+let lastRippleTime = 0;
+let rippleInterval = 75; 
 
 let colors = {
   backgroundStart: '#848E62', 
@@ -14,6 +17,8 @@ let colors = {
   particleColors: ['#457b9d', '#1d3557', '#8d99ae', '#6d6875'], 
   ripple: '#f0ece2'           
 };
+
+const WIND_BOUND = 0.6; 
 
 function preload() {
   soundFile = loadSound('windaudio.mp3');
@@ -33,7 +38,7 @@ function setup() {
     let x = map(i, 0, 9, width / 4, (3 * width) / 4);
     let baseRandomness = random(0.8, 1.2);
     let frequency = map(i, 0, 9, 200, 600); 
-    strings.push(new HarpString(x, -height / 2, height * 1.5, i * 0.1, baseRandomness, i, frequency));
+    strings.push(new HarpString(x, -height / 2, height * 1.5, i * 0.1 * width, baseRandomness, i, frequency));
   }
 
   for (let i = 0; i < 50; i++) {
@@ -46,11 +51,12 @@ function setup() {
 function draw() {
   drawGradientBackground();
 
-  windDirection = constrain(windDirection, -2, 2);
+  windDirection = lerp(windDirection, targetWindDirection, 0.01);
+  windDirection = constrain(windDirection, -WIND_BOUND, WIND_BOUND); 
 
   let spectrum = fft.analyze();
   let energy = fft.getEnergy("bass", "treble");
-  let blowIntensity = map(energy, 120, 180, 100, 400);
+  let blowIntensity = map(energy, 120, 180, height * 0.1, height * 0.4);
 
   smoothBlowIntensity = lerp(smoothBlowIntensity, blowIntensity, 0.3);
 
@@ -83,18 +89,36 @@ function drawGradientBackground() {
 }
 
 function mousePressed() {
-  ripples.push(new Ripple(mouseX, mouseY, strings));
+  createRipple(mouseX, mouseY);
+}
+
+function mouseDragged() {
+  if (millis() - lastRippleTime > rippleInterval) {
+    createRipple(mouseX, mouseY);
+    lastRippleTime = millis();
+  }
+}
+
+function createRipple(x, y) {
+  ripples.push(new Ripple(x, y, strings));
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+  strings = []; 
+  for (let i = 0; i < 10; i++) {
+    let x = map(i, 0, 9, width / 4, (3 * width) / 4);
+    let baseRandomness = random(0.8, 1.2);
+    let frequency = map(i, 0, 9, 200, 600); 
+    strings.push(new HarpString(x, -height / 2, height * 1.5, i * 0.1 * width, baseRandomness, i, frequency));
+  }
 }
 
 class Particle {
   constructor(x, y, color) {
     this.x = x;
     this.y = y;
-    this.size = random(2, 5);
+    this.size = random(width * 0.002, width * 0.005);
     this.speed = random(0.5, 2);
     this.alpha = random(100, 200);
     this.color = color;
@@ -145,7 +169,7 @@ class HarpString {
 
   display() {
     stroke(colors.string);
-    strokeWeight(3);
+    strokeWeight(width * 0.003); 
     noFill();
     beginShape();
     for (let vertex of this.vertices) {
@@ -163,6 +187,7 @@ class HarpString {
     }
   }
 }
+
 class Ripple {
   constructor(x, y, strings) {
     this.x = x;
@@ -176,11 +201,19 @@ class Ripple {
       this.oscillators[i].start();
       this.oscillators[i].amp(0);
     }
+
+    this.adjustWindDirection();
+  }
+
+  adjustWindDirection() {
+    let influence = map(this.x, 0, width, 0.05, -0.05); 
+    targetWindDirection += influence; 
+    targetWindDirection = constrain(targetWindDirection, -WIND_BOUND, WIND_BOUND); 
   }
 
   update() {
-    this.radius += 5;
-    this.lifespan -= 4;
+    this.radius += width * 0.002; 
+    this.lifespan -= 10; 
     this.checkCollision();
   }
 
@@ -188,7 +221,7 @@ class Ripple {
     noFill();
     let alphaValue = constrain(this.lifespan, 0, 255); 
     stroke(color(colors.ripple + hex(alphaValue, 2)));
-    strokeWeight(2);
+    strokeWeight(width * 0.002); 
     ellipse(this.x, this.y, this.radius * 2);
   }
 
