@@ -34,10 +34,22 @@ function setup() {
   osc.start();
   osc.amp(0);
 
+  let majorChordFrequencies = [
+    98.00,  // G2
+    130.81, // C3
+    164.81, // E3
+    196.00, // G3
+    261.63, // C4
+    329.63, // E4
+    392.00, // G4
+    523.25, // C5
+    659.25, // E5
+    784.00  // G5
+  ];
   for (let i = 0; i < 10; i++) {
     let x = map(i, 0, 9, width / 4, (3 * width) / 4);
     let baseRandomness = random(0.8, 1.2);
-    let frequency = map(i, 0, 9, 200, 600); 
+    let frequency = majorChordFrequencies[i]; 
     strings.push(new HarpString(x, -height / 2, height * 1.5, i * 0.1 * width, baseRandomness, i, frequency));
   }
 
@@ -181,8 +193,8 @@ class HarpString {
   playSound(osc) {
     if (!this.triggered) { 
       osc.freq(this.frequency);
-      osc.amp(0.5, 0.05);
-      osc.amp(0, 0.5);
+      osc.amp(0.25, 0.2);
+      osc.amp(0, 1.5);    // Increase fade-out time
       this.triggered = true;
     }
   }
