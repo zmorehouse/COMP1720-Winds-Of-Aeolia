@@ -8,17 +8,17 @@ let particles = [];
 let ripples = [];
 let osc;
 let lastRippleTime = 0;
-let rippleInterval = 75; 
+let rippleInterval = 150; 
 
 let colors = {
   backgroundStart: '#848E62', 
   backgroundEnd: '#4C5D22',   
-  string: '#f0ece2',          
+  string: '#f0ece2', 
   particleColors: ['#e1faf9', '#b1e6e3', '#e6dbbc', '#6d6875'], 
   ripple: '#f0ece2'           
 };
 
-const WIND_BOUND = 0.6; 
+const WIND_BOUND = 0.3; 
 
 function preload() {
   soundFile = loadSound('/assets/windaudio.mp3');
@@ -34,17 +34,22 @@ function setup() {
   osc.start();
   osc.amp(0);
 
-  let majorChordFrequencies = [
-    98.00,  // G2
-    130.81, // C3
+  let majorChordFrequencies = [ // Pentatonic Scale
+    146.83, // D3
     164.81, // E3
     196.00, // G3
-    261.63, // C4
+    220.00, // A3
+    246.94, // B3
+    293.66, // D4
     329.63, // E4
     392.00, // G4
-    523.25, // C5
+    440.00, // A4
+    493.88, // B4
+    587.33, // D5
     659.25, // E5
-    784.00  // G5
+    784.00, // G5
+    880.00, // A5
+    987.77  // B5
   ];
   for (let i = 0; i < 10; i++) {
     let x = map(i, 0, 9, width / 4, (3 * width) / 4);
@@ -121,7 +126,6 @@ function windowResized() {
   for (let i = 0; i < 10; i++) {
     let x = map(i, 0, 9, width / 4, (3 * width) / 4);
     let baseRandomness = random(0.8, 1.2);
-    let frequency = map(i, 0, 9, 200, 600); 
     strings.push(new HarpString(x, -height / 2, height * 1.5, i * 0.1 * width, baseRandomness, i, frequency));
   }
 }
@@ -194,7 +198,7 @@ class HarpString {
     if (!this.triggered) { 
       osc.freq(this.frequency);
       osc.amp(0.25, 0.2);
-      osc.amp(0, 1.5);    // Increase fade-out time
+      osc.amp(0, 1.5);    
       this.triggered = true;
     }
   }
