@@ -14,14 +14,14 @@ let colors = {
   backgroundStart: '#848E62', 
   backgroundEnd: '#4C5D22',   
   string: '#f0ece2',          
-  particleColors: ['#457b9d', '#1d3557', '#8d99ae', '#6d6875'], 
+  particleColors: ['#e1faf9', '#b1e6e3', '#e6dbbc', '#6d6875'], 
   ripple: '#f0ece2'           
 };
 
 const WIND_BOUND = 0.6; 
 
 function preload() {
-  soundFile = loadSound('windaudio.mp3');
+  soundFile = loadSound('/assets/windaudio.mp3');
 }
 
 function setup() {
