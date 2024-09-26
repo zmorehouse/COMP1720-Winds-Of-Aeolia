@@ -141,14 +141,14 @@ class Particle {
   }
 
   update(windDirection, blowIntensity) {
-    this.x += windDirection * this.speed;
-    this.y += sin(frameCount * 0.01) * this.speed * blowIntensity * 0.01;
+    this.y += windDirection * this.speed * 10; 
+    this.x += sin(frameCount * 0.01) * this.speed * blowIntensity * 0.02;
 
     if (this.x > width) this.x = 0;
     if (this.x < 0) this.x = width;
     if (this.y > height) this.y = 0;
     if (this.y < 0) this.y = height;
-  }
+}
 
   display() {
     noStroke();
