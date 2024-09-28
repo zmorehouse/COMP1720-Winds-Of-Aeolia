@@ -68,7 +68,8 @@ function setup() {
 function draw() {
   drawGradientBackground();
 
-  windDirection = lerp(windDirection, targetWindDirection, 0.01);
+  // Increase the speed of wind direction change for quicker responsiveness
+  windDirection = lerp(windDirection, targetWindDirection, 0.01); 
   windDirection = constrain(windDirection, -WIND_BOUND, WIND_BOUND); 
 
   let spectrum = fft.analyze();
@@ -77,16 +78,19 @@ function draw() {
 
   smoothBlowIntensity = lerp(smoothBlowIntensity, blowIntensity, 0.3);
 
+  // Update and display particles after calculating wind direction
   for (let particle of particles) {
     particle.update(windDirection, smoothBlowIntensity);
     particle.display();
   }
 
+  // Update and display strings after particles
   for (let string of strings) {
     string.update(smoothBlowIntensity, windDirection);
     string.display();
   }
 
+  // Update and display ripples
   for (let i = ripples.length - 1; i >= 0; i--) {
     ripples[i].update();
     ripples[i].display();
@@ -141,14 +145,15 @@ class Particle {
   }
 
   update(windDirection, blowIntensity) {
-    this.y += windDirection * this.speed * 10; 
-    this.x += sin(frameCount * 0.01) * this.speed * blowIntensity * 0.02;
+    this.y += -windDirection * this.speed ;
+    
+    this.x -= sin(frameCount * 0.01) * this.speed * blowIntensity * 0.02;
 
     if (this.x > width) this.x = 0;
     if (this.x < 0) this.x = width;
     if (this.y > height) this.y = 0;
     if (this.y < 0) this.y = height;
-}
+  }
 
   display() {
     noStroke();
