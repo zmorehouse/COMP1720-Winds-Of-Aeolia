@@ -28,7 +28,7 @@ let colors = {
 };
 
 function preload() {
-  soundFile = loadSound("/assets/windaudio.mp3"); // Load wind audio
+  soundFile = loadSound("assets/windaudio.mp3"); // Load wind audio
 }
 
 function setup() {

@@ -16,3 +16,5 @@
 - [2] Lisa Spalding. 2021. Analysis of an Aeolian Harp. Retrieved from https://bpb-us-w2.wpmucdn.com/wp.wpi.edu/dist/8/428/files/2021/05/AnalysisofanAeolianHarp.pdf
 - [3] J. M. W. Turner. 1890. Thompson’s Aeolian Harp. Retrieved from https://www.artsy.net/artwork/jmw-turner-thompsons-aeolian-harp
 - [4] Britannica. 2024. Aoelian Harp. Retrieved from https://www.britannica.com/art/Aeolian-harp 
+
+*For best results, please dont use Firefox. The sketch lags it out for unknown reasons* 
