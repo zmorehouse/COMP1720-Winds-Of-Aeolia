@@ -1,4 +1,4 @@
-// Abstract Aeolian Harp y Zac Morehouse - u7637337
+// Abstract Aeolian Harp by Zac Morehouse - u7637337
 
 // Arrays for different components
 let strings = [];
@@ -104,7 +104,7 @@ function draw() {
   let energy = fft.getEnergy("bass", "treble");
   let blowIntensity = map(energy, 120, 180, height * 0.1, height * 0.4);
 
-  smoothBlowIntensity = lerp(smoothBlowIntensity, blowIntensity, 0.3);
+    smoothBlowIntensity = lerp(smoothBlowIntensity, blowIntensity, 0.3); 
 
   // Particles
   for (let particle of particles) {
