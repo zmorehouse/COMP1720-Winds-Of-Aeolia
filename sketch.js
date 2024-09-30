@@ -20,12 +20,23 @@ let rippleInterval = 150;
 
 // Initialize colors dictionary
 let colors = {
-  backgroundStart: "#6d7855",
-  backgroundEnd: "#1b3d00",
+  backgroundStart: "#6d7855",   // Green background start color
+  backgroundEnd: "#1b3d00",     // Green background end color
+  transitionStart: "#003366",   // Dark blue transition start color
+  transitionEnd: "#001f3f",     // Dark blue transition end color
+  ceruleanStart: "#00CED1",     // Light cerulean blue start color
+  ceruleanEnd: "#00AEEF",       // Light cerulean blue end color
   string: "#e9ac1f",
   particleColors: ["#FFFFFF", "#FFF8E1", "#B3E5FC"],
   ripple: "#f0ece2",
 };
+
+// Vars for transitions
+let timeFactor = 0;             
+let transitionSpeed = 0.005;    
+let pauseDuration = 500;        
+let phase = 0;                
+let pauseCounter = 0;         
 
 function preload() {
   soundFile = loadSound("assets/windaudio.mp3"); // Load wind audio
@@ -129,22 +140,97 @@ function draw() {
 }
 
 // Gradient / Background Func
+function updateTransitionPhase() {
+  if (phase % 2 === 0) { // Transition phases (0, 2, 4)
+    timeFactor += transitionSpeed;
+    if (timeFactor >= 1) {
+      timeFactor = 1;
+      phase++;
+      pauseCounter = 0;
+    }
+  } else { // Pause phases (1, 3, 5)
+    pauseCounter++;
+    if (pauseCounter >= pauseDuration) {
+      timeFactor = 0;
+      phase++;
+    }
+  }
+
+  // If the phase reaches 6 (full loop completed), reset to 0
+  if (phase >= 6) {
+    phase = 0;
+  }
+}
+
+// Gradient / Background Func
 function drawGradientBackground() {
+  updateTransitionPhase();
+
   let cx = width / 2; // Center X
   let cy = height / 2; // Center Y
   let maxRadius = dist(0, 0, cx, cy); // Maximum radius for the gradient
-  let step = 10; // Adjust this step size to control the number of layers
+  let step = 10; 
 
+  let bgStartColor, bgEndColor;
+
+  // Handle each transition phase and set colors accordingly
+  if (phase === 0) {
+    // Green to Dark Blue
+    bgStartColor = lerpColor(
+      color(colors.backgroundStart),
+      color(colors.transitionStart),
+      timeFactor
+    );
+    bgEndColor = lerpColor(
+      color(colors.backgroundEnd),
+      color(colors.transitionEnd),
+      timeFactor
+    );
+  } else if (phase === 2) {
+    // Dark Blue to Cerulean Blue
+    bgStartColor = lerpColor(
+      color(colors.transitionStart),
+      color(colors.ceruleanStart),
+      timeFactor
+    );
+    bgEndColor = lerpColor(
+      color(colors.transitionEnd),
+      color(colors.ceruleanEnd),
+      timeFactor
+    );
+  } else if (phase === 4) {
+    // Cerulean Blue back to Green
+    bgStartColor = lerpColor(
+      color(colors.ceruleanStart),
+      color(colors.backgroundStart),
+      timeFactor
+    );
+    bgEndColor = lerpColor(
+      color(colors.ceruleanEnd),
+      color(colors.backgroundEnd),
+      timeFactor
+    );
+  } else {
+    // Paused phases: keep current colors without change
+    if (phase === 1) {
+      bgStartColor = color(colors.transitionStart);
+      bgEndColor = color(colors.transitionEnd);
+    } else if (phase === 3) {
+      bgStartColor = color(colors.ceruleanStart);
+      bgEndColor = color(colors.ceruleanEnd);
+    } else if (phase === 5) {
+      bgStartColor = color(colors.backgroundStart);
+      bgEndColor = color(colors.backgroundEnd);
+    }
+  }
+
+  // Draw the gradient background using concentric circles
   for (let r = maxRadius; r > 0; r -= step) {
     let inter = map(r, 0, maxRadius, 0, 1); // Interpolation between start and end colors
-    let c = lerpColor(
-      color(colors.backgroundStart),
-      color(colors.backgroundEnd),
-      inter
-    );
+    let c = lerpColor(bgStartColor, bgEndColor, inter); 
     noStroke();
     fill(c);
-    ellipse(cx, cy, r * 2, r * 2); // Draw concentric circles to simulate the gradient
+    ellipse(cx, cy, r * 2, r * 2); 
   }
 }
 
