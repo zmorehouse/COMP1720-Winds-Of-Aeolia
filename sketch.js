@@ -1,4 +1,4 @@
-// Abstract Aeolian Harp by Zac Morehouse - u7637337
+// Winds of Aeolia by Zac Morehouse - u7637337
 
 // Arrays for different components
 let strings = [];
