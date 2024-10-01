@@ -7,6 +7,7 @@
 - [5] Colorful Coding. 2021.  Collision detection in p5.js | Tutorial #9. Retrieved from https://www.youtube.com/watch?v=HK_oG_ev8FQ
 - [6] magicsfirst. 2022. Glow Effect. Retrieved from https://editor.p5js.org/magicsfirst/sketches/nFfUODa-B 
 - [7] Patt Vira. 2024. p5.js Coding Tutorial | Color Gradient Animation (lerpColor Function). Retrieved from https://www.youtube.com/watch?v=lPgscmgxcH0 
+- [8] Kubi, 2019. Hex to RGB. Retrieved from https://editor.p5js.org/Kubi/sketches/IJp2TXHNJ
 
 ## Sampled Sounds
 - [1] Myself, 2024. Wind Audio

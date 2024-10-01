@@ -34,14 +34,15 @@ let colors = {
 
 };
 
+// Seasonal arrays
 let seasonalParticleColors = {
   spring: ["#6d7855", "#8fbc8f", "#98fb98"],  
   summer: ["#ffd180", "#e5cc66", "#c2c780", "#778761"], 
   autumn: ["#a37737", "#cc9062", "#a1866d", "#d1ab4d"],  
   winter: ["#ffffff", "#6a869e", "#d3e0f0", "#8ba9c9"],  
 };
-let currentSeason = "spring";
 
+let currentSeason = "spring";
 
 // Vars for transitions
 let timeFactor = 0;             
@@ -58,12 +59,11 @@ function setup() {
 
   createCanvas(windowWidth, windowHeight);
 
+  // Push new particles
   for (let i = 0; i < 50; i++) {
     let seasonColor = color(random(seasonalParticleColors[currentSeason]));
         particles.push(new Particle(random(width), random(height), seasonColor, currentSeason));
   }
-
-
 
   // Init wind sound FFT analysis
   fft = new p5.FFT(0.9, 16);
@@ -111,9 +111,6 @@ function setup() {
       )
     );
   }
-
-
-
   frameRate(30);
 }
 
@@ -124,7 +121,7 @@ function draw() {
   let newSeasonColors;
   let oldSeasonColors;
 
-  // Set up which season's colors we're transitioning to and from, based on the current phase
+  // Set up which season's colors we're transitioning to and from
   if (phase === 6 || phase === 7) {
     currentSeason = "spring";
     newSeasonColors = seasonalParticleColors.spring;
@@ -147,20 +144,18 @@ function draw() {
 
   for (let particle of particles) {
     if (transitioning && !particle.hasNewColor) {
-      // Set a new target color and reset lerpFactor at the start of each transition phase
+
+      // If transitioning and particle doesnt have a target color set one
       let newColor = color(random(newSeasonColors));
-      particle.updateColor(newColor); // Assign the new color and reset lerpFactor
-      particle.hasNewColor = true; // Prevent setting new color multiple times during the transition
+      particle.updateColor(newColor); 
+      particle.hasNewColor = true; 
     }
 
     if (!transitioning) {
       // Reset the lerpFactor and allow particles to get new colors in the next transition
-      particle.lerpFactor = 0; // Reset the lerp factor in static phases (1, 3, 5, 7)
+      particle.lerpFactor = 0; 
       particle.hasNewColor = false;
     }
-
-
-    // Update the color transition over time
     particle.updateTransition();
 
     // Update particles' positions based on wind direction and intensity
@@ -194,20 +189,19 @@ function draw() {
   }
 }
 
-
 // Gradient / Background Func
 function updateTransitionPhase() {
   if (phase % 2 === 0) { // Transition phases (0, 2, 4, 6)
     timeFactor += transitionSpeed;
     if (timeFactor >= 1) {
-      timeFactor = 1; // Ensure it doesn’t exceed 1
+      timeFactor = 1; 
       phase++;
-      pauseCounter = 0; // Reset the pause counter
+      pauseCounter = 0; 
     }
   } else { // Pause phases (1, 3, 5, 7)
     pauseCounter++;
     if (pauseCounter >= pauseDuration) {
-      timeFactor = 0; // Reset the timeFactor for the next transition
+      timeFactor = 0; 
       phase++;
     }
   }
@@ -231,19 +225,19 @@ function drawGradientBackground() {
 
   // Handle each transition phase and set colors accordingly
   if (phase === 0) {
-    // Spring (Green to Deep Blue for Summer)
+    // Spring 
     bgStartColor = lerpColor(color(colors.springStart), color(colors.summerStart), timeFactor);
     bgEndColor = lerpColor(color(colors.springEnd), color(colors.summerEnd), timeFactor);
   } else if (phase === 2) {
-    // Summer (Deep Blue to Autumn Yellow)
+    // Summer 
     bgStartColor = lerpColor(color(colors.summerStart), color(colors.autumnStart), timeFactor);
     bgEndColor = lerpColor(color(colors.summerEnd), color(colors.autumnEnd), timeFactor);
   } else if (phase === 4) {
-    // Autumn (Yellow to Winter Blue)
+    // Autumn 
     bgStartColor = lerpColor(color(colors.autumnStart), color(colors.winterStart), timeFactor);
     bgEndColor = lerpColor(color(colors.autumnEnd), color(colors.winterEnd), timeFactor);
   } else if (phase === 6) {
-    // Winter (Blue back to Spring Green)
+    // Winter 
     bgStartColor = lerpColor(color(colors.winterStart), color(colors.springStart), timeFactor);
     bgEndColor = lerpColor(color(colors.winterEnd), color(colors.springEnd), timeFactor);
   } else {
@@ -297,7 +291,6 @@ function createRipple(x, y) {
 }
 
 // Particle class for wind blown particles
-
 class Particle {
   constructor(x, y, color, season) {
     this.x = x;
@@ -307,19 +300,19 @@ class Particle {
     this.alpha = random(100, 200);
     this.color = color;
     this.initialColor = color;
-    this.targetColor = color; // New property for the target color during transitions
-    this.hasNewColor = false; // Track if new color has been set for this transition
+    this.targetColor = color; 
+    this.hasNewColor = false; 
     this.season = season;
     this.angle = random(TWO_PI);
     this.rotationSpeed = random(-0.05, 0.05);
     this.fallSpeed = random(1.5, 2.5);
     this.isPointedPetal = random(1) > 0.8;
-    this.lerpFactor = 0; // Track the transition progress for each particle
+    this.lerpFactor = 0; 
   }
 
   updateColor(newColor) {
-    this.targetColor = newColor; // Update the target color
-    this.lerpFactor = 0; // Reset the lerp factor when a new color is set
+    this.targetColor = newColor; 
+    this.lerpFactor = 0; 
   }
 
   updateTransition() {
@@ -327,7 +320,6 @@ class Particle {
       this.color = lerpColor(color(this.initialColor), color(this.targetColor), this.lerpFactor);
       this.lerpFactor += 0.01; // Gradually increase the lerp factor to transition smoothly
     } else {
-      // Once the transition completes, make the target color the initial color
       this.initialColor = this.targetColor;
     }
   }
@@ -346,7 +338,7 @@ class Particle {
 
   display() {
     noStroke();
-    let colorWithAlpha = color(this.color.levels[0], this.color.levels[1], this.color.levels[2], this.alpha);
+    let colorWithAlpha = color(this.color.levels[0], this.color.levels[1], this.color.levels[2], this.alpha);// Convert hex to rgba
     fill(colorWithAlpha);
     push();
     translate(this.x, this.y);
@@ -359,6 +351,7 @@ class Particle {
     pop();
   }
 
+  // Draw standard petal
   drawPetal() {
     beginShape();
     vertex(0, -this.size / 2);
@@ -381,6 +374,7 @@ class Particle {
     endShape(CLOSE);
   }
 
+  // Draw pointed petal
   drawPointedPetal() {
     beginShape();
     vertex(0, -this.size);
@@ -405,8 +399,6 @@ class Particle {
 }
 
 
-
-
 // HarpString class
 class HarpString {
   constructor(x, y1, y2, offset, baseRandomness, index, frequency) {
@@ -425,7 +417,7 @@ class HarpString {
     this.glowColor = color(214, 155, 45);
     this.goldColor = color(255, 196, 92);
 
-    // Create an oscillator for each string and reuse it
+    // Create an oscillator for each string
     this.oscillator = new p5.Oscillator("sine");
     this.oscillator.start();
     this.oscillator.amp(0);
@@ -435,7 +427,7 @@ class HarpString {
   update(blowIntensity, windDirection) {
     let timeVaryingRandomness =
       this.baseRandomness +
-      (noise(this.offset + frameCount * 0.01) - 0.5) * 0.3; // Time-based randomness
+      (noise(this.offset + frameCount * 0.01) - 0.5) * 0.3; 
     this.blowFactor = blowIntensity * timeVaryingRandomness * windDirection * 2;
     this.vertices = [];
     this.triggered = false;
@@ -461,7 +453,7 @@ class HarpString {
   display() {
     let throbbingGlow = 1 + 0.1 * sin(frameCount * 0.05); // Glow throb effect
 
-    // Draw the outer glow with a throbbing effect but keep the alpha (transparency) consistent
+    // Draw the outer glow with a throbbing effect but keep the alpha consistent
     for (let i = 10; i > 0; i--) {
       let alphaValue = map(
         i,
@@ -481,7 +473,7 @@ class HarpString {
     }
 
     // Draw the actual string with the current color (transitioning from white to gold)
-    stroke(this.glowColor); // Use the current color of the string (white to gold)
+    stroke(this.glowColor); 
     strokeWeight(width * 0.0035);
     noFill();
     beginShape();
