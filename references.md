@@ -12,9 +12,10 @@
 - [1] Myself, 2024. Wind Audio
 
 ## Inspiration
+After discovering the Aeolian harp, I did some research into the instrument and its history. Some links I found useful, alongside some works that influenced my own are linked below. 
 - [1] Ralf Kleemann. 2012. Wind Harp - Aeolian Harp on the Irish coast. Retrieved from https://www.youtube.com/watch?v=rmP5XaNYlkI
 - [2] Lisa Spalding. 2021. Analysis of an Aeolian Harp. Retrieved from https://bpb-us-w2.wpmucdn.com/wp.wpi.edu/dist/8/428/files/2021/05/AnalysisofanAeolianHarp.pdf
 - [3] J. M. W. Turner. 1890. Thompson’s Aeolian Harp. Retrieved from https://www.artsy.net/artwork/jmw-turner-thompsons-aeolian-harp
 - [4] Britannica. 2024. Aoelian Harp. Retrieved from https://www.britannica.com/art/Aeolian-harp 
 
-*For best results, please dont use Firefox. The sketch lags it out for unknown reasons* 
+*For best results, please dont use Firefox when viewing the sketch. The sketch lags it out for unknown reasons* 
