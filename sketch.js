@@ -20,22 +20,25 @@ let rippleInterval = 150;
 
 // Initialize colors dictionary
 let colors = {
-  backgroundStart: "#6d7855",   // Green background start color
-  backgroundEnd: "#1b3d00",     // Green background end color
-  transitionStart: "#003366",   // Dark blue transition start color
-  transitionEnd: "#001f3f",     // Dark blue transition end color
-  ceruleanStart: "#00CED1",     // Light cerulean blue start color
-  ceruleanEnd: "#00AEEF",       // Light cerulean blue end color
+  springStart: "#6d7855",   
+  springEnd: "#1b3d00",     
+  summerStart: "#003366",   
+  summerEnd: "#001f3f",    
+  autumnStart: "#5f969e",   
+  autumnEnd: "#1f7e8c",     
+  winterStart: "#7d9447",  
+  winterEnd: "#9e8d4a",     
   string: "#e9ac1f",
   particleColors: ["#FFFFFF", "#FFF8E1", "#B3E5FC"],
   ripple: "#f0ece2",
+
 };
 
 // Vars for transitions
 let timeFactor = 0;             
 let transitionSpeed = 0.005;    
-let pauseDuration = 500;        
-let phase = 0;                
+let pauseDuration = 400;        
+let phase = 7;                
 let pauseCounter = 0;         
 
 function preload() {
@@ -141,14 +144,14 @@ function draw() {
 
 // Gradient / Background Func
 function updateTransitionPhase() {
-  if (phase % 2 === 0) { // Transition phases (0, 2, 4)
+  if (phase % 2 === 0) { // Transition phases (0, 2, 4, 6)
     timeFactor += transitionSpeed;
     if (timeFactor >= 1) {
       timeFactor = 1;
       phase++;
       pauseCounter = 0;
     }
-  } else { // Pause phases (1, 3, 5)
+  } else { // Pause phases (1, 3, 5, 7)
     pauseCounter++;
     if (pauseCounter >= pauseDuration) {
       timeFactor = 0;
@@ -156,8 +159,8 @@ function updateTransitionPhase() {
     }
   }
 
-  // If the phase reaches 6 (full loop completed), reset to 0
-  if (phase >= 6) {
+  // If the phase reaches 8 (full loop completed), reset to 0
+  if (phase >= 8) {
     phase = 0;
   }
 }
@@ -166,71 +169,54 @@ function updateTransitionPhase() {
 function drawGradientBackground() {
   updateTransitionPhase();
 
-  let cx = width / 2; // Center X
-  let cy = height / 2; // Center Y
-  let maxRadius = dist(0, 0, cx, cy); // Maximum radius for the gradient
-  let step = 10; 
+  let cx = width / 2;
+  let cy = height / 2;
+  let maxRadius = dist(0, 0, cx, cy);
+  let step = 10;
 
   let bgStartColor, bgEndColor;
 
   // Handle each transition phase and set colors accordingly
   if (phase === 0) {
-    // Green to Dark Blue
-    bgStartColor = lerpColor(
-      color(colors.backgroundStart),
-      color(colors.transitionStart),
-      timeFactor
-    );
-    bgEndColor = lerpColor(
-      color(colors.backgroundEnd),
-      color(colors.transitionEnd),
-      timeFactor
-    );
+    // Spring (Green to Deep Blue for Summer)
+    bgStartColor = lerpColor(color(colors.springStart), color(colors.summerStart), timeFactor);
+    bgEndColor = lerpColor(color(colors.springEnd), color(colors.summerEnd), timeFactor);
   } else if (phase === 2) {
-    // Dark Blue to Cerulean Blue
-    bgStartColor = lerpColor(
-      color(colors.transitionStart),
-      color(colors.ceruleanStart),
-      timeFactor
-    );
-    bgEndColor = lerpColor(
-      color(colors.transitionEnd),
-      color(colors.ceruleanEnd),
-      timeFactor
-    );
+    // Summer (Deep Blue to Autumn Yellow)
+    bgStartColor = lerpColor(color(colors.summerStart), color(colors.autumnStart), timeFactor);
+    bgEndColor = lerpColor(color(colors.summerEnd), color(colors.autumnEnd), timeFactor);
   } else if (phase === 4) {
-    // Cerulean Blue back to Green
-    bgStartColor = lerpColor(
-      color(colors.ceruleanStart),
-      color(colors.backgroundStart),
-      timeFactor
-    );
-    bgEndColor = lerpColor(
-      color(colors.ceruleanEnd),
-      color(colors.backgroundEnd),
-      timeFactor
-    );
+    // Autumn (Yellow to Winter Blue)
+    bgStartColor = lerpColor(color(colors.autumnStart), color(colors.winterStart), timeFactor);
+    bgEndColor = lerpColor(color(colors.autumnEnd), color(colors.winterEnd), timeFactor);
+  } else if (phase === 6) {
+    // Winter (Blue back to Spring Green)
+    bgStartColor = lerpColor(color(colors.winterStart), color(colors.springStart), timeFactor);
+    bgEndColor = lerpColor(color(colors.winterEnd), color(colors.springEnd), timeFactor);
   } else {
-    // Paused phases: keep current colors without change
+    // Paused phases
     if (phase === 1) {
-      bgStartColor = color(colors.transitionStart);
-      bgEndColor = color(colors.transitionEnd);
+      bgStartColor = color(colors.summerStart);
+      bgEndColor = color(colors.summerEnd);
     } else if (phase === 3) {
-      bgStartColor = color(colors.ceruleanStart);
-      bgEndColor = color(colors.ceruleanEnd);
+      bgStartColor = color(colors.autumnStart);
+      bgEndColor = color(colors.autumnEnd);
     } else if (phase === 5) {
-      bgStartColor = color(colors.backgroundStart);
-      bgEndColor = color(colors.backgroundEnd);
+      bgStartColor = color(colors.winterStart);
+      bgEndColor = color(colors.winterEnd);
+    } else if (phase === 7) {
+      bgStartColor = color(colors.springStart);
+      bgEndColor = color(colors.springEnd);
     }
   }
 
   // Draw the gradient background using concentric circles
   for (let r = maxRadius; r > 0; r -= step) {
-    let inter = map(r, 0, maxRadius, 0, 1); // Interpolation between start and end colors
-    let c = lerpColor(bgStartColor, bgEndColor, inter); 
+    let inter = map(r, 0, maxRadius, 0, 1);
+    let c = lerpColor(bgStartColor, bgEndColor, inter);
     noStroke();
     fill(c);
-    ellipse(cx, cy, r * 2, r * 2); 
+    ellipse(cx, cy, r * 2, r * 2);
   }
 }
 
@@ -353,12 +339,18 @@ class HarpString {
     this.frequency = frequency;
     this.vertices = [];
     this.triggered = false;
-    this.glowIntensity = 0.5; // Starting glow intensity
-    this.minGlow = 0.5; // Minimum glow intensity
-    this.maxGlow = 3; // Maximum glow intensity
-    this.glowColor = color(214, 155, 45); // Initial dull white
-    this.goldColor = color(255, 196, 92); // Bright gold
+    this.glowIntensity = 0.5;
+    this.minGlow = 0.5;
+    this.maxGlow = 3;
+    this.glowColor = color(214, 155, 45);
+    this.goldColor = color(255, 196, 92);
+
+    // Create an oscillator for each string and reuse it
+    this.oscillator = new p5.Oscillator("sine");
+    this.oscillator.start();
+    this.oscillator.amp(0);
   }
+
 
   update(blowIntensity, windDirection) {
     let timeVaryingRandomness =
@@ -419,15 +411,15 @@ class HarpString {
     endShape();
   }
 
-  playSound(osc) {
+
+  playSound() {
     if (!this.triggered) {
-      // Only play sound if string is not already triggered
-      osc.freq(this.frequency);
-      osc.amp(0.25, 0.2); // Fade in / out
-      osc.amp(0, 1.5);
+      this.oscillator.freq(this.frequency);
+      this.oscillator.amp(0.25, 0.2); // Fade in / out
+      this.oscillator.amp(0, 1.5);
       this.triggered = true;
-      this.glowIntensity = this.maxGlow; // Set the glow intensity to max when hit
-      this.glowColor = this.goldColor; // Set the color to gold when hit
+      this.glowIntensity = this.maxGlow;
+      this.glowColor = this.goldColor;
     }
   }
 }
@@ -480,19 +472,19 @@ class Ripple {
   }
 
   checkCollision() {
-    for (let i = 0; i < this.strings.length; i++) {
-      // Check collision with each string
-      let string = this.strings[i];
+    for (let string of this.strings) {
       for (let vertex of string.vertices) {
         let d = dist(this.x, this.y, vertex.x, vertex.y);
         if (d < this.radius && !string.triggered) {
-          // If ripple intersects with string and string is not triggered play sound
-          string.playSound(this.oscillators[i]);
+          // Play sound with the existing oscillator in the string
+          string.playSound();
           string.triggered = true;
         }
       }
     }
   }
+  
+  
 
   isFinished() {
     return this.lifespan <= 0; // Ripple is finished when lifespan is zero
