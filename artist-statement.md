@@ -1,7 +1,0 @@
-# Artist Statement
-
-"Winds of Aeolia" is an abstract interpretation of the Aeolian harp, an ancient Grecian instrument played by wind. The artwork depicts the harp's free-flowing strings as they sway in shifting winds, exploring the organic randomness of nature and the unpredictable yet constrained forces that guide it. The colors of the work frequently transition, symbolic of changing seasons, seeking to enhance the piece's connection to the natural world and reflecting the harmony inherent in seasonal shifts.
-
-Aurally, the design seeks to reflect the tones of an Aeolian harp, with the strings mapped to notes within the C Major Pentatonic scale. Layered beneath this is sampled wind audio - dynamically mapped to the intensity of the visuals to enhance viewer immersion.
-
-Interaction is at the heart of the piece, allowing the viewer to ‘act’ as the wind. With loose controls, users can influence the wind’s direction or play the harp. This control scheme is deliberately fluid rather than rigid - there are no sudden shifts or symmetrical patterns. Users are rarely able to strike a single note without affecting others, reflecting the natural, interwoven harmonies of traditional Aeolian harps. In this regard, as the viewer embodies the wind, their connection to the artwork deepens - offering a sense of control tempered by nature’s imperfect beauty, where structured music and spontaneous sound flow together in harmony.
